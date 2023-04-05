@@ -29,6 +29,27 @@ func TryMap[T any, U any](source []T, apply func(T) (U, error)) (result []U, err
 	return
 }
 
+func MapMap[TK, UK comparable, TV, UV any](source map[TK]TV, apply func(TK, TV) (UK, UV)) (result map[UK]UV) {
+	result = make(map[UK]UV, len(source))
+	for k, v := range source {
+		a, b := apply(k, v)
+		result[a] = b
+	}
+	return
+}
+
+func TryMapMap[TK, UK comparable, TV, UV any](source map[TK]TV, apply func(TK, TV) (UK, UV, error)) (map[UK]UV, error) {
+	result := make(map[UK]UV, len(source))
+	for k, v := range source {
+		a, b, err := apply(k, v)
+		if err != nil {
+			return nil, err
+		}
+		result[a] = b
+	}
+	return result, nil
+}
+
 func Reduce[T any, U any](source []T, init U, apply func(U, T) U) (result U) {
 	result = init
 	for _, v := range source {
